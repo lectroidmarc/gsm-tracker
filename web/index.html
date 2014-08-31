@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GPS data</title>
+    <meta charset="utf-8" />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaOdP6gkDqoX3K7o5PyHRQPPtNKpuchVc"></script>
+    <script src="https://data.sparkfun.com/js/phant-manager.min.js"></script>
+
+    <script src="maptrack.js"></script>
+    <script src="parameters.js"></script>
+    <script src="keys.js"></script>
+    <script src="functions.js"></script>
+
+    <script>
+      window.addEventListener('load', initMap);
+      window.addEventListener('load', initButtons);
+      window.addEventListener('load', initMOWS);
+      window.addEventListener('load', initFetch);
+    </script>
+  </head>
+
+  <body>
+    <h1>GPS data</h1>
+
+    <button id="send">Send marker location info to Sparkfun</button>
+    <button id="clear">Clear Sparkfun data</button>
+    <div id="agl">0'</div>
+
+    <div id="map"></div>
+
+    <div id="stats"></div>
+    <p id="data_link"><a>data.sparkfun.com</a></p>
+  </body>
+</html>

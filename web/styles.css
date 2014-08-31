@@ -1,0 +1,81 @@
+/**
+ *
+ */
+
+body {
+  font-family: sans-serif;
+  margin: 30px;
+}
+
+h1 {
+  margin: 0;
+}
+
+button {
+  background-color: #ddd;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 100%;
+  margin: 20px 10px 20px 0;
+  outline: none;
+  padding: 10px 15px;
+  user-select: none;
+}
+button:active {
+  background-color: #bbb;
+}
+button:hover {
+  background-color: #ccc;
+}
+button:disabled {
+  background-color: #eee;
+  cursor: default;
+}
+
+#map {
+  border: 1px solid #999;
+  box-shadow: 5px 5px 15px #999;
+  /*height: 600px;*/
+  margin: auto;
+  width: 100%;
+}
+
+#data_link {
+  font-size: smaller;
+  text-align: right;
+}
+
+#data_link a {
+  color: #666;
+  text-decoration: none;
+}
+
+#data_link a:hover {
+  text-decoration: underline;
+}
+
+#agl {
+  display: inline-block;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 10px 15px 9px;
+}
+
+#stats {
+  background-color: #ccc;
+  display: none;
+  height: 10px;
+  margin-top: 20px;
+  position: relative;
+  width: 100%;
+}
+
+#stats div:first-child {
+  background-color: #3c0;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  display: inline-block;
+  height: 10px;
+  position: absolute;
+}

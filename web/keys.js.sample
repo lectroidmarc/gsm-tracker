@@ -1,0 +1,6 @@
+/**
+ * Keys for Sparkfun's Data service
+ */
+
+var public_key = '<YOUR_PUBLIC_KEY>';
+var private_key = '<YOUR_PRIVATE_KEY>';
