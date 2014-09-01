@@ -12,6 +12,13 @@ var MapTrack = function (opts) {
   });
   this.markers = [];
   this.maxLength = opts.maxLength || 0;
+  this.circle = circle = new google.maps.Circle({
+    map: this.map,
+    strokeColor: '#f00',
+    strokeWeight: 1,
+    fillColor: '#f00',
+    fillOpacity: 0.3
+  });
 };
 
 MapTrack.prototype.setPath = function (points) {
@@ -31,7 +38,6 @@ MapTrack.prototype.addPoint = function (point) {
   var date = new Date(point.timestamp);
   var hdop = point.hdop || 1;
 
-/*
   var marker = new google.maps.Marker({
     map: this.map,
     position: location,
@@ -42,18 +48,13 @@ MapTrack.prototype.addPoint = function (point) {
     },
     title: 'at ' + date.toString()
   });
-*/
-
-  var circle = new google.maps.Circle({
-    map: this.map,
-    center: location,
-    strokeWeight: 1,
-    radius: hdop * 2.5
-  });
 
   var path = this.polyLine.getPath();
   path.insertAt(0, location);
-  this.markers.unshift(circle);
+  this.markers.unshift(marker);
+
+  this.circle.setCenter(location);
+  this.circle.setRadius(hdop * 2);
 
   if (this.maxLength > 0 && path.getLength() > this.maxLength) {
     path.pop();
