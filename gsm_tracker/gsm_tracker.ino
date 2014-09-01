@@ -154,8 +154,8 @@ void sendLocation () {
   uint16_t statuscode;
   int16_t length;
 
-  sprintf (url, "http://data.sparkfun.com/input/%s?private_key=%s&latitude=%s&longitude=%s&altitude=%s",
-    SPARKFUN_PUBLIC_KEY, SPARKFUN_PRIVATE_KEY, current_location.latitude_c, current_location.longitude_c, current_location.altitude_c);
+  sprintf (url, "http://data.sparkfun.com/input/%s?private_key=%s&latitude=%s&longitude=%s&hdop=%s&altitude=%s",
+    SPARKFUN_PUBLIC_KEY, SPARKFUN_PRIVATE_KEY, current_location.latitude_c, current_location.longitude_c, current_location.hdop_c, current_location.altitude_c);
 
   Serial.print(F("Sending: ")); Serial.println(url);
 
@@ -231,7 +231,7 @@ void handleRing () {
   for (int8_t sms_index = 1; sms_index <= sms_num; sms_index++) {
     Serial.print(F("  SMS #")); Serial.print(sms_index); Serial.print(F(": "));
 
-    if (fona.readSMS(sms_index, sms_buffer, 250, &smslen)) {
+    if (fona.readSMS(sms_index, sms_buffer, 140, &smslen)) {
       // if the length is zero, its a special case where the index number is higher
       // so increase the max we'll look at!
       if (smslen == 0) {

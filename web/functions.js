@@ -171,6 +171,7 @@ function sendMarkerLocation () {
     var params = new Parameters({
       latitude: location.latitude,
       longitude: location.longitude,
+      hdop: 1,
       altitude: location.altitude
     });
 

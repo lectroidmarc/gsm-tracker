@@ -10,11 +10,13 @@ class Location {
 
     float latitude;
     float longitude;
+    float hdop;
     float altitude;
 
     char latitude_c[12];
     char longitude_c[12];
-    char altitude_c[12];
+    char hdop_c[5];
+    char altitude_c[8];
 
     void set(Adafruit_GPS);
     boolean isEqual(Location);

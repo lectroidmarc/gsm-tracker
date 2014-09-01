@@ -14,10 +14,12 @@ void Location::set (Adafruit_GPS gps) {
 
   latitude = toDecimal(gps.latitude, gps.lat);
   longitude = toDecimal(gps.longitude, gps.lon);
+  hdop = gps.HDOP;
   altitude = gps.altitude;
 
   dtostrf(latitude, 8, 6, latitude_c);
   dtostrf(longitude, 8, 6, longitude_c);
+  dtostrf(hdop, 1, 2, hdop_c);
   dtostrf(altitude, 1, 2, altitude_c);
 };
 

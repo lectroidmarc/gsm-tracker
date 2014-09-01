@@ -29,7 +29,9 @@ MapTrack.prototype.setPath = function (points) {
 MapTrack.prototype.addPoint = function (point) {
   var location = new google.maps.LatLng(point.latitude, point.longitude);
   var date = new Date(point.timestamp);
+  var hdop = point.hdop || 1;
 
+/*
   var marker = new google.maps.Marker({
     map: this.map,
     position: location,
@@ -40,10 +42,18 @@ MapTrack.prototype.addPoint = function (point) {
     },
     title: 'at ' + date.toString()
   });
+*/
+
+  var circle = new google.maps.Circle({
+    map: this.map,
+    center: location,
+    strokeWeight: 1,
+    radius: hdop * 2.5
+  });
 
   var path = this.polyLine.getPath();
   path.insertAt(0, location);
-  this.markers.unshift(marker);
+  this.markers.unshift(circle);
 
   if (this.maxLength > 0 && path.getLength() > this.maxLength) {
     path.pop();
