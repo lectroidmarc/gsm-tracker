@@ -150,7 +150,7 @@ void loop() {
 
 
 void sendLocation () {
-  char url[200];
+  char url[160];
   uint16_t statuscode;
   int16_t length;
 
