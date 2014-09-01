@@ -18,7 +18,7 @@ void Location::set (Adafruit_GPS gps) {
 
   dtostrf(latitude, 8, 6, latitude_c);
   dtostrf(longitude, 8, 6, longitude_c);
-  dtostrf(altitude, 1, 2, altitude_c);
+  dtostrf(altitude, 4, 2, altitude_c);
 };
 
 boolean Location::isEqual(Location location) {
