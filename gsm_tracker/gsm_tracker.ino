@@ -22,11 +22,11 @@
 #define GPS_INTERVAL_SECONDS 10
 
 
-SoftwareSerial gpsSS = SoftwareSerial(GPS_TX, GPS_RX);
-Adafruit_GPS gps = Adafruit_GPS(&gpsSS);
+SoftwareSerial gpsSerial = SoftwareSerial(GPS_TX, GPS_RX);
+Adafruit_GPS gps = Adafruit_GPS(&gpsSerial);
 
-SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
-Adafruit_FONA fona = Adafruit_FONA(&fonaSS, FONA_RST);
+SoftwareSerial fonaSerial = SoftwareSerial(FONA_TX, FONA_RX);
+Adafruit_FONA fona = Adafruit_FONA(&fonaSerial, FONA_RST);
 
 Location current_location = Location();
 
@@ -160,7 +160,7 @@ void sendLocation () {
   Serial.print(F("Sending: ")); Serial.println(url);
 
   // Make the FONA listen, we kinda need that...
-  fonaSS.listen();
+  fonaSerial.listen();
 
   uint8_t rssi = fona.getRSSI();
 
@@ -204,7 +204,7 @@ void sendLocation () {
   }
 
   // Put the GPS back into listen mode
-  gpsSS.listen();
+  gpsSerial.listen();
 }
 
 
@@ -214,14 +214,14 @@ void handleRing () {
 
   Serial.println(F("Ring ring, Neo."));
 
-  fonaSS.listen();
+  fonaSerial.listen();
 
   int8_t sms_num = fona.getNumSMS();
 
   if (sms_num == -1) {
     // This is an error case
     ringing = true;
-    gpsSS.listen();
+    gpsSerial.listen();
     return;
   }
 
@@ -285,7 +285,7 @@ void handleRing () {
     }
   }
 
-  gpsSS.listen();
+  gpsSerial.listen();
 
   ringing = false;
 }
