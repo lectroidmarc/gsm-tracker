@@ -6,17 +6,17 @@
 #include "Location.h"
 #include "keys.h"
 
-#define FONA_RST 4
-#define FONA_PS 5
-#define FONA_KEY 6
-#define FONA_RI 2    // <-- must be connected to external interrupt pin
-#define FONA_RX 8
-#define FONA_TX 9
+#define FONA_RST A0
+#define FONA_PS A1
+#define FONA_KEY A2
+#define FONA_RI 3    // <-- must be connected to external interrupt pin
+#define FONA_RX A4
+#define FONA_TX A5
 
-#define GPS_RX 10
-#define GPS_TX 11
+#define GPS_RX 4
+#define GPS_TX 5
 
-#define BUZZER_PIN 12
+#define BUZZER_PIN 6
 #define FIX_LED 13
 
 #define GPS_INTERVAL_SECONDS 10
@@ -88,7 +88,7 @@ void setup() {
   Serial.println(F(" done."));
 
   // Attach the RI interrupt
-  attachInterrupt(0, ringInterrupt, FALLING);
+  attachInterrupt(1, ringInterrupt, FALLING);
 
 
   // We need to start the GPS second... By default, the last intialized port is listening.
