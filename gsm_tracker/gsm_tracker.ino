@@ -259,9 +259,12 @@ void handleRing () {
         } else if (strcmp(sms_buffer, "Status") == 0) {
           Serial.println(F("  Responding with status... "));
 
-          char sms_response[8];
+          char sms_response[16];
+          uint16_t vbat;
+          fona.getBattVoltage(&vbat);
+
           uint8_t rssi = fona.getRSSI();
-          sprintf (sms_response, "%d bars.", barsFromRSSI(rssi));
+          sprintf (sms_response, "%d bars.\n%d mV", barsFromRSSI(rssi), vbat);
 
           // reply...
           if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
