@@ -46,7 +46,7 @@ void ringInterrupt () {
 }
 
 
-void setup() {
+void setup () {
   pinMode(BUZZER_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, HIGH);
   delay(500);
@@ -107,7 +107,7 @@ void setup() {
 }
 
 
-void loop() {
+void loop () {
   if (ringing && digitalRead(FONA_PS) == HIGH) handleRing();
 
   if (gps.newNMEAreceived() && gps.parse(gps.lastNMEA())) {
@@ -209,85 +209,78 @@ void sendLocation () {
 
 
 void handleRing () {
-  char sms_buffer[140];
-  uint16_t smslen;
-
   Serial.println(F("Ring ring, Neo."));
 
   fonaSerial.listen();
-
   int8_t sms_num = fona.getNumSMS();
 
-  if (sms_num == -1) {
-    // This is an error case
-    ringing = true;
-    gpsSerial.listen();
-    return;
-  }
+  if (sms_num > -1) {
+    Serial.print(sms_num); Serial.println(" messages waiting.");
 
-  Serial.print(sms_num); Serial.println(" messages waiting.");
+    char sms_buffer[9];
+    uint16_t smslen;
 
-  // Read any SMS message we may have...
-  for (int8_t sms_index = 1; sms_index <= sms_num; sms_index++) {
-    Serial.print(F("  SMS #")); Serial.print(sms_index); Serial.print(F(": "));
+    // Read any SMS message we may have...
+    for (int8_t sms_index = 1; sms_index <= sms_num; sms_index++) {
+      Serial.print(F("  SMS #")); Serial.print(sms_index); Serial.print(F(": "));
 
-    if (fona.readSMS(sms_index, sms_buffer, 140, &smslen)) {
-      // if the length is zero, its a special case where the index number is higher
-      // so increase the max we'll look at!
-      if (smslen == 0) {
-        Serial.println(F("[empty slot]"));
-        sms_num++;
-        continue;
+      if (fona.readSMS(sms_index, sms_buffer, 8, &smslen)) {
+        // if the length is zero, its a special case where the index number is higher
+        // so increase the max we'll look at!
+        if (smslen == 0) {
+          Serial.println(F("[empty slot]"));
+          sms_num++;
+          continue;
+        }
+
+        Serial.println(sms_buffer);
+
+        // If it matches our pre-defined command string...
+        if (strcmp(sms_buffer, "Location") == 0) {
+          Serial.println(F("  Responding with location... "));
+
+          char sms_response[52];
+
+          if (current_location.isValid) {
+            sprintf (sms_response, "https://maps.google.com?q=%s,%s", current_location.latitude_c, current_location.longitude_c);
+          } else {
+            sprintf (sms_response, "I'm lost!");
+          }
+
+          // reply...
+          if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
+            Serial.println(F("reply sent!"));
+          } else {
+            Serial.println(F("reply failed"));
+          }
+
+          // delete this SMS
+          fona.deleteSMS(sms_index);
+        } else if (strcmp(sms_buffer, "Status") == 0) {
+          Serial.println(F("  Responding with status... "));
+
+          char sms_response[8];
+          uint8_t rssi = fona.getRSSI();
+          sprintf (sms_response, "%d bars.", barsFromRSSI(rssi));
+
+          // reply...
+          if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
+            Serial.println(F("reply sent!"));
+          } else {
+            Serial.println(F("reply failed"));
+          }
+
+          // delete this SMS
+          fona.deleteSMS(sms_index);
+        }
+      } else {
+        Serial.println(F("Failed to read SMS messages!"));
       }
-
-      Serial.println(sms_buffer);
-
-      // If it matches our pre-defined command string...
-      if (strcmp(sms_buffer, "Location") == 0) {
-        Serial.println(F("  Responding with location... "));
-
-        char sms_response[52];
-
-        if (current_location.isValid) {
-          sprintf (sms_response, "https://maps.google.com?q=%s,%s", current_location.latitude_c, current_location.longitude_c);
-        } else {
-          sprintf (sms_response, "I'm lost!");
-        }
-
-        // reply...
-        if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
-          Serial.println(F("reply sent!"));
-        } else {
-          Serial.println(F("reply failed"));
-        }
-
-        // delete this SMS
-        fona.deleteSMS(sms_index);
-      } else if (strcmp(sms_buffer, "Status") == 0) {
-        Serial.println(F("  Responding with status... "));
-
-        char sms_response[8];
-        uint8_t rssi = fona.getRSSI();
-        sprintf (sms_response, "%d bars.", barsFromRSSI(rssi));
-
-        // reply...
-        if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
-          Serial.println(F("reply sent!"));
-        } else {
-          Serial.println(F("reply failed"));
-        }
-
-        // delete this SMS
-        fona.deleteSMS(sms_index);
-      }
-    } else {
-      Serial.println(F("Failed to read SMS messages!"));
     }
+
+    gpsSerial.listen();
+    ringing = false;
   }
-
-  gpsSerial.listen();
-
-  ringing = false;
 }
 
 
