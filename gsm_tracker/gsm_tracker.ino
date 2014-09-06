@@ -13,10 +13,10 @@
 #define FONA_RX A4
 #define FONA_TX A5
 
-#define GPS_RX 4
-#define GPS_TX 5
+#define GPS_RX 11
+#define GPS_TX 12
 
-#define BUZZER_PIN 6
+#define BUZZER_PIN 4
 #define FIX_LED 13
 
 #define GPS_INTERVAL_SECONDS 10
