@@ -54,7 +54,7 @@ MapTrack.prototype.addPoint = function (point) {
   this.markers.unshift(marker);
 
   this.circle.setCenter(location);
-  this.circle.setRadius(hdop * 2);
+  this.circle.setRadius(hdop * 1.8);
 
   if (this.maxLength > 0 && path.getLength() > this.maxLength) {
     path.pop();
