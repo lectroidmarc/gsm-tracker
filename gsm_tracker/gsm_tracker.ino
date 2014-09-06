@@ -72,8 +72,9 @@ void setup () {
 
   // Start the FONA
   Serial.print(F("Initializing FONA..."));
-  while (! fona.begin(4800)) {
-    Serial.print(F(" waiting..."));
+  while (1) {
+    boolean fonaStarted = fona.begin(4800);
+    if (fonaStarted) break;
     delay (1000);
   }
   Serial.println(F(" done."));
@@ -85,6 +86,8 @@ void setup () {
     if (network_status == 1 || network_status == 5) break;
     delay(250);
   }
+  // Sometimes the FONA can't recieve SMSs until it sends one first.
+  fonaSendStatusSMS(MY_PHONE_NUMBER);
   Serial.println(F(" done."));
 
   // Attach the RI interrupt
@@ -239,16 +242,7 @@ void handleRing () {
         if (strcmp(sms_buffer, "Location") == 0) {
           Serial.print(F("  Responding with location..."));
 
-          char sms_response[52];
-
-          if (current_location.isValid) {
-            sprintf (sms_response, "https://maps.google.com?q=%s,%s", current_location.latitude_c, current_location.longitude_c);
-          } else {
-            sprintf (sms_response, "I'm lost!");
-          }
-
-          // reply...
-          if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
+          if (fonaSendLocationSMS(MY_PHONE_NUMBER)) {
             Serial.println(F(" sent."));
           } else {
             Serial.println(F(" failed!"));
@@ -259,15 +253,7 @@ void handleRing () {
         } else if (strcmp(sms_buffer, "Status") == 0) {
           Serial.print(F("  Responding with status..."));
 
-          char sms_response[16];
-          uint16_t vbat;
-          fona.getBattVoltage(&vbat);
-
-          uint8_t rssi = fona.getRSSI();
-          sprintf (sms_response, "%d bars,\n%d mV", barsFromRSSI(rssi), vbat);
-
-          // reply...
-          if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
+          if (fonaSendStatusSMS(MY_PHONE_NUMBER)) {
             Serial.println(F(" sent."));
           } else {
             Serial.println(F(" failed!"));
@@ -284,6 +270,31 @@ void handleRing () {
     gpsSerial.listen();
     ringing = false;
   }
+}
+
+
+boolean fonaSendLocationSMS (char *recipient) {
+  char sms_response[52];
+
+  if (current_location.isValid) {
+    sprintf (sms_response, "https://maps.google.com?q=%s,%s", current_location.latitude_c, current_location.longitude_c);
+  } else {
+    sprintf (sms_response, "I'm lost!");
+  }
+
+  return fona.sendSMS(recipient, sms_response);
+}
+
+
+boolean fonaSendStatusSMS (char *recipient) {
+  uint8_t rssi = fona.getRSSI();
+  uint16_t vbat;
+  fona.getBattVoltage(&vbat);
+
+  char sms_response[16];
+  sprintf (sms_response, "%d bars, %d mV", barsFromRSSI(rssi), vbat);
+
+  return fona.sendSMS(recipient, sms_response);
 }
 
 
