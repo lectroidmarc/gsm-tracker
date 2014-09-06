@@ -68,6 +68,8 @@ MapTrack.prototype.clear = function () {
   while (this.markers.length > 0) {
     this.markers.pop().setMap(null);
   }
+
+  this.circle.setCenter(null);
 };
 
 MapTrack.prototype.count = function () {
