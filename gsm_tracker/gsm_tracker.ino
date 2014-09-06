@@ -237,7 +237,7 @@ void handleRing () {
 
         // If it matches our pre-defined command string...
         if (strcmp(sms_buffer, "Location") == 0) {
-          Serial.println(F("  Responding with location... "));
+          Serial.print(F("  Responding with location..."));
 
           char sms_response[52];
 
@@ -249,28 +249,28 @@ void handleRing () {
 
           // reply...
           if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
-            Serial.println(F("reply sent!"));
+            Serial.println(F(" sent."));
           } else {
-            Serial.println(F("reply failed"));
+            Serial.println(F(" failed!"));
           }
 
           // delete this SMS
           fona.deleteSMS(sms_index);
         } else if (strcmp(sms_buffer, "Status") == 0) {
-          Serial.println(F("  Responding with status... "));
+          Serial.print(F("  Responding with status..."));
 
           char sms_response[16];
           uint16_t vbat;
           fona.getBattVoltage(&vbat);
 
           uint8_t rssi = fona.getRSSI();
-          sprintf (sms_response, "%d bars.\n%d mV", barsFromRSSI(rssi), vbat);
+          sprintf (sms_response, "%d bars,\n%d mV", barsFromRSSI(rssi), vbat);
 
           // reply...
           if (fona.sendSMS(MY_PHONE_NUMBER, sms_response)) {
-            Serial.println(F("reply sent!"));
+            Serial.println(F(" sent."));
           } else {
-            Serial.println(F("reply failed"));
+            Serial.println(F(" failed!"));
           }
 
           // delete this SMS
