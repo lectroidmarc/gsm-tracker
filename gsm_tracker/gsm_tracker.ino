@@ -170,28 +170,19 @@ void sendLocation () {
   if (rssi > 5) {
     if (fona.enableGPRS(true)) {
       if (fona.HTTP_GET_start(url, &statuscode, (uint16_t *)&length)) {
+        while (length > 0) {
+          while (fona.available()) {
+            char c = fona.read();
 
-        // Successful transmission, handle and check response data...
-        if (statuscode != 200) {
-          Serial.print(F("Error sending data: "));
+            // Serial.write is too slow, we'll write directly to Serial register!
+            loop_until_bit_is_set(UCSR0A, UDRE0); /* Wait until data register empty. */
+            UDR0 = c;
 
-          while (length > 0) {
-            while (fona.available()) {
-              char c = fona.read();
-
-              // Serial.write is too slow, we'll write directly to Serial register!
-              loop_until_bit_is_set(UCSR0A, UDRE0); /* Wait until data register empty. */
-              UDR0 = c;
-
-              length--;
-              if (! length) break;
-            }
+            length--;
+            if (! length) break;
           }
-        } else {
-          // give time to recieve the datas
-          delay (50);
         }
-
+        fona.HTTP_GET_end();
       } else {
         Serial.println(F("Failed to send GPRS data!"));
       }
