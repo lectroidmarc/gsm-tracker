@@ -168,30 +168,34 @@ void sendLocation () {
   uint8_t rssi = fona.getRSSI();
 
   if (rssi > 5) {
-    if (fona.enableGPRS(true)) {
-      if (fona.HTTP_GET_start(url, &statuscode, (uint16_t *)&length)) {
-        while (length > 0) {
-          while (fona.available()) {
-            char c = fona.read();
-
-            // Serial.write is too slow, we'll write directly to Serial register!
-            loop_until_bit_is_set(UCSR0A, UDRE0); /* Wait until data register empty. */
-            UDR0 = c;
-
-            length--;
-            if (! length) break;
-          }
-        }
-        fona.HTTP_GET_end();
-      } else {
-        Serial.println(F("Failed to send GPRS data!"));
-      }
-
-      if (!fona.enableGPRS(false)) {
-        Serial.println(F("Failed to turn GPRS off!"));
-      }
-    } else {
+    // Make an attempt to turn GPRS mode on.  Sometimes the FONA gets freaked out and GPRS doesn't turn off.
+    // When this happens you can't turn it on aagin, but you don't need to because it's on.  So don't sweat
+    // the error case here -- GPRS could already be on -- just keep on keeping on and let HTTP_GET_start()
+    // error if there's a problem with GPRS.
+    if (!fona.enableGPRS(true)) {
       Serial.println(F("Failed to turn GPRS on!"));
+    }
+
+    if (fona.HTTP_GET_start(url, &statuscode, (uint16_t *)&length)) {
+      while (length > 0) {
+        while (fona.available()) {
+          char c = fona.read();
+
+          // Serial.write is too slow, we'll write directly to Serial register!
+          loop_until_bit_is_set(UCSR0A, UDRE0); /* Wait until data register empty. */
+          UDR0 = c;
+
+          length--;
+          if (! length) break;
+        }
+      }
+      fona.HTTP_GET_end();
+    } else {
+      Serial.println(F("Failed to send GPRS data!"));
+    }
+
+    if (!fona.enableGPRS(false)) {
+      Serial.println(F("Failed to turn GPRS off!"));
     }
   } else {
     Serial.println(F("Can't transmit, network signal strength is crap!"));
