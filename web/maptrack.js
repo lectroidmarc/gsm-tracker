@@ -23,11 +23,9 @@ var MapTrack = function (opts) {
 
 MapTrack.prototype.setPath = function (points) {
   if (Array.isArray(points)) {
-    points.reverse();
-
     this.clear();
 
-    for (var x = 0; x < points.length; x++) {
+    for (var x = points.length - 1; x >= 0; x--) {
       this.addPoint(points[x]);
     }
   }
