@@ -26,7 +26,7 @@ SoftwareSerial gpsSerial = SoftwareSerial(GPS_TX, GPS_RX);
 Adafruit_GPS gps = Adafruit_GPS(&gpsSerial);
 
 SoftwareSerial fonaSerial = SoftwareSerial(FONA_TX, FONA_RX);
-Adafruit_FONA fona = Adafruit_FONA(&fonaSerial, FONA_RST);
+Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
 
 Location current_location = Location();
 
@@ -72,8 +72,9 @@ void setup () {
 
   // Start the FONA
   Serial.print(F("Initializing FONA..."));
+  fonaSerial.begin(4800);
   while (1) {
-    boolean fonaStarted = fona.begin(4800);
+    boolean fonaStarted = fona.begin(fonaSerial);
     if (fonaStarted) break;
     delay (1000);
   }
